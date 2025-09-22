@@ -14,4 +14,25 @@ a <- scan("shakespeare.txt",
 # Verify the read result
 # head(a)  # View the first 6 words
 # length(a)  # View total words（about 195960）
- 
+
+# pre-processing
+
+
+
+##
+# function:clean_text()
+# purpose:
+#   Clean Shakespeare text vector 'a'
+#   Remove stage directions (in [])
+#   Remove character names/headings/numbers
+#   Remove “_” and "-"
+#   Use split_punct function to separate the punctuation marks
+#   Convert to lowercase
+# input:a
+# 
+# output:cl_a
+##
+
+clean_text <- function(a){
+  
+}
