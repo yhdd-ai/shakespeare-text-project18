@@ -14,4 +14,5 @@ a <- scan("shakespeare.txt",
 # Verify the read result
 # head(a)  # View the first 6 words
 # length(a)  # View total words（about 195960）
+123
  
