@@ -3,7 +3,7 @@
 
 ## Project Instruction：Member A (33%): Text Preparation and Preprocessing Module；Member B (34%): Word Frequency Statistics and Sequence Matrix Construction Module；Member C (33%): Core function development and sentence generation module
 
-#setwd("/Users/clggmac/Rprogramming/Shakespeare-project/shakespeare-text-project18")  ## The setwd line should be commented out of the code you finally submit for marking！！！
+setwd("D:/scx Work/programming/R/Rprogramming/shakespeare-text-project18")  ## The setwd line should be commented out of the code you finally submit for marking！！！
 # reading text：skip first 83 rows（invalid instruction）,reading 196043-83 row（valid text）,coding with UTF-8
 a <- scan("shakespeare.txt", 
           what = "character",  # Read as character type (split by word)
@@ -15,7 +15,7 @@ a <- scan("shakespeare.txt",
 # head(a)  # View the first 6 words
 # length(a)  # View total words（about 195960）
 
-# pre-processing
+## pre-processing
 
 
 
@@ -34,5 +34,14 @@ a <- scan("shakespeare.txt",
 ##
 
 clean_text <- function(a){
+  
+  a_bracket_le <- grep("\\[", a)
+  a_remove <- rep(FALSE, length(a))
+  
+  for(i in a_bracket_le){
+    a_bracket_ri <- grep("\\]",a[i+1:min(length(a),i+100)])
+    j <- a_bracket_ri[1]
+    a_remove[i:j] <- TRUE
+  }
   
 }
