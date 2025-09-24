@@ -39,35 +39,36 @@ a <- scan("shakespeare.txt",
 
 split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)", "\"", "'")){
   
-  sp_a <- c()
+  sp_a <- vector("list", length(a))
   
-  for(w in a){
+  punct_pat <- paste(punct, collapse="|")
+  
+  for(i in 1:length(a)){
+    w <- a[i]
     
-    punct_true <- grep(paste(punct, collapse="|"), w)
-    
-    if(length(punct_true) == 0){
-      sp_a <- c(sp_a, w) #No punctuation mark
+    if(length(grep(punct_pat, w)) == 0){
+      sp_a[[i]] <- w #No punctuation mark
     }
     else{
       
-      w_2 <-w
+      w_2 <- w
       
       for(p in punct){
-        if(length(grep(p, w_2)) != 0){
+        if(length(grep(p, w_2)) > 0){
           w_2 <- gsub(p, "", w_2)
-          sp_a <- c(sp_a, w_2, gsub("\\\\", "", p))
+          sp_a[[i]] <- c(w_2, gsub("\\\\", "", p))
           w_2 <- ""
-          break 
+          break
         }
       }
       
       if(w_2 != ""){
-        sp_a <- c(sp_a, w_2) # Prevent the occurrence of unrecognized punctuation marks
+        sp_a[[i]] <- w_2 # Prevent the occurrence of unrecognized punctuation marks
       }
     }
   }
   
-  return(sp_a)
+  return(unlist(sp_a))
   
 }
 
@@ -89,24 +90,26 @@ clean_text <- function(a){
   
   #Remove stage directions (in [])
   a_bracket_le <- grep("\\[", a)
+  a_bracket_ri_all <- grep("\\]", a)
   
-  a_remove <- rep(TRUE, length(a))# mark the deleted parts
+  a_remove <- rep(TRUE, length(a)) # mark the deleted parts
   
   for(i in a_bracket_le){
-    
-    a_bracket_ri <- grep("\\]", a[i+1:min(length(a),i+100)])
+
+    a_bracket_ri <- a_bracket_ri_all[a_bracket_ri_all > i & a_bracket_ri_all <= i + 100]
     
     if(length(a_bracket_ri) == 0){
       j <- i #In the case of single parentheses, only remove the parentheses
     }
     else{
-      j <- a_bracket_ri[1]+i
+      j <- a_bracket_ri[1]
     }
     
     a_remove[i:j] <- FALSE
   }
   
   a <- a[a_remove]
+  
   
   #Remove character names/headings/numbers
   
@@ -132,7 +135,13 @@ clean_text <- function(a){
   return(a)
 }
 
+# start_time <- proc.time()
+
 a <- clean_text(a)
+
+# end_time <- proc.time()
+# time <- end_time - start_time
+# print(time)
 
 # #test
 # a_test <-clean_text(a_test)
