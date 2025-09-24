@@ -97,7 +97,7 @@ clean_text <- function(a){
     a_bracket_ri <- grep("\\]", a[i+1:min(length(a),i+100)])
     
     if(length(a_bracket_ri) == 0){
-      j <- i
+      j <- i #In the case of single parentheses, only remove the parentheses
     }
     else{
       j <- a_bracket_ri[1]+i
