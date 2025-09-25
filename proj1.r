@@ -11,11 +11,20 @@ a <- scan("shakespeare.txt",
           nlines = 196043 - 83, 
           fileEncoding = "UTF-8")
 
-# Verify the read result
-# head(a)  # View the first 6 words
-# length(a)  # View total words（about 195960）
-
-## Vocabulary Construction and Word Frequency Statistics
+##
+# function:vocabulary_constr_and_freq()
+# author:Huaidong Yue
+# date:25/09/2025
+# purpose:
+#   1.Vocabulary Construction
+#   2.Word Frequency Statistics
+# 
+# input:
+#   pre_words-vector of splited character
+# 
+# output: 
+#   word_counts-counts of name matched words
+##
 vocabulary_constr_and_freq <- function(pre_words){
   # Convert to lowercase
   pre_words <- tolower(pre_words)
@@ -37,6 +46,19 @@ word_counts <- vocabulary_constr_and_freq(a)
 
 mlag <- 4
 token_vec <- c()
+##
+# function:matrix_construction()
+# author:Huaidong Yue
+# date:25/09/2025
+# purpose:
+#   Common Word Marker Sequence Matrix Construction
+# 
+# input:
+#   word_counts-counts of name matched words
+# 
+# output: 
+#   M-matrix
+##
 ## Common Word Marker Sequence Matrix Construction
 matrix_construction <- function(word_counts){
   # Filter the 1000 most common words）
