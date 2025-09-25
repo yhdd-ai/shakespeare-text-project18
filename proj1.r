@@ -1,4 +1,4 @@
-# Member1：Chunxi Su（UNN：s2814164）；Member2：Huaidong Yue（UNN：s2815318）；Yifei Peng：王五（UNN：s2792136）
+# Member1：Chunxi Su（UNN：s2814164）；Member2：Huaidong Yue（UNN：s2815318）；Member2：Yifei Peng（UNN：s2792136）
 # Contribution Instruction：
 
 ## Project Instruction：Member A (33%): Text Preparation and Preprocessing Module；Member B (34%): Word Frequency Statistics and Sequence Matrix Construction Module；Member C (33%): Core function development and sentence generation module
