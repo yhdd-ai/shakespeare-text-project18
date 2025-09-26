@@ -1,9 +1,6 @@
-############################################
-# Step 5: Next Word Prediction
-############################################
-next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
+next.word <- function(key, M, M1 , w=rep(1, ncol(M)-1)) {
   # key: 当前词序列 (tokens, 可能比 mlag 短)
-  # M: (n-mlag) × (mlag+1) 矩阵，每行是一段连续的 token 序列
+  # M: (n-mlag) × (mlag+1) 矩阵
   # M1: 整个文本的 token 向量
   # w: mixture 权重
   # output: 下一个词的 token
@@ -14,14 +11,11 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   candidates <- c() #存所有的候选token
   probs <- c()  #与 candidates 一一对应的概率块（还未合并重复）
   
-  
   key_len <- length(key)
   # 从最长的 key 开始，逐步降低阶数
   for (i in seq_len(key_len)) {
     subkey <- tail(key, i)
     mc <- mlag - i + 1
-    #防止索引超出范围
-    #if (mc < 1) next
     
     ii <- colSums(!(t(M[, mc:mlag, drop=FALSE]) == subkey))
     match_rows <- which(ii == 0 & is.finite(ii)) #匹配的行是ii == 0
@@ -57,19 +51,16 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   #抽样
   next_token <- sample(names(prob_table), 1, prob = prob_table)
   return(as.numeric(next_token))
-  
 }
 
 # Step 6: Sentence Generation
-simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) - 1) {
+simulate_sentence <- function(M, M1, b, start_word=NULL, mlag=ncol(M) - 1) {
   # M: Markov 矩阵
   # M1: 整个文本的 token 序列
   # b: 常用词表（token -> word 的映射）
   # start_word: 可选的起始词（string）；若 NULL 则随机挑选一个
-  # mlag: 最大 Markov 阶数（默认 4）
   # 返回: 生成的一句话（string）
   
-  # Step 1: 选择起始 token
   # 选择起始token
   if (is.null(start_word)) {
     valid_tokens <- M1[!is.na(M1)]
@@ -106,8 +97,7 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
   # 将token转换回单词
   words <- b[sentence_tokens]
   
-  # Step 4: 拼接成句子
-  # paste 会产生 "word1 word2 ."，需要稍微处理标点
+  # 拼接成句子
   sentence <- paste(words, collapse=" ")
   sentence <- gsub(" ([,.;:!?])", "\\1", sentence)  # 去掉标点前多余的空格
   sentence <- trimws(sentence)   #去除字符串开头和结尾的空格
