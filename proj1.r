@@ -1,6 +1,3 @@
-############################################
-# Step 5: Next Word Prediction
-############################################
 next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   # key: 当前词序列 (tokens, 可能比 mlag 短)
   # M: (n-mlag) × (mlag+1) 矩阵，每行是一段连续的 token 序列
