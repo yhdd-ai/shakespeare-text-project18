@@ -206,13 +206,27 @@ matrix_construction <- function(word_counts, mlag){
     M[, col] <- token_vec[col : (col + n - mlag - 1)]
   }
   
-  return(M)
+  return(list(M = M, token_vec = token_vec))
 }
 
-# Execute sequence matrix construction (input: word_counts + mlag; output: M)
-M <- matrix_construction(word_counts, mlag)
+# Execute sequence matrix construction (input: word_counts + mlag; output: M,token_vec)
+result <- matrix_construction(word_counts, mlag)
+M <- result$M  # 序列矩阵
+token_vec <- result$token_vec  # 全局 token_vec（补全缺失的全局变量）
 
-
+##
+# function:next.word()
+# author:
+# date:
+# purpose:
+#   
+# 
+# input:
+#   
+# 
+# output: 
+#   
+##
 next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   # key: 当前词序列 (tokens, 可能比 mlag 短)
   # M: (n-mlag) × (mlag+1) 矩阵，每行是一段连续的 token 序列
@@ -269,7 +283,19 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   
 }
 
-# Step 6: Sentence Generation
+##
+# function:simulate_sentence()
+# author:
+# date:
+# purpose:
+#   Sentence Generation
+# 
+# input:
+#   
+# 
+# output: 
+#   
+##
 simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) - 1) {
   # M: Markov 矩阵
   # M1: 整个文本的 token 序列
