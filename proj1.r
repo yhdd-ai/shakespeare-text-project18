@@ -144,6 +144,8 @@ clean_text <- function(a){
 
 # Execute text preprocessing (output cleaned text vector 'a')
 a <- clean_text(a)
+# check first 100 words
+head(a, 100)
 
 
 ## ------------------------------
@@ -180,7 +182,7 @@ vocabulary_constr_and_freq <- function(pre_words){
   return(word_counts)
 }
 
-# Execute word frequency statistics (input: cleaned 'a'; output: word_counts)
+# Execute word frequency statistics
 word_counts <- vocabulary_constr_and_freq(a)
 
 # Set lag order for sequence matrix (hyperparameter)
@@ -372,5 +374,5 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
   return(sentence)
 }
 
-sentence <- simulate_sentence(M,token_vec,b)
+sentence <- simulate_sentence(M,token_vec,b,start_word = 'thou' )
 cat(sentence)
