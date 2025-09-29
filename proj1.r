@@ -54,6 +54,7 @@ split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)
   
   punct_pat <- paste(punct, collapse="|")
   
+  #Process each element in a separately.
   for(i in 1:length(a)){
     w <- a[i]
     
@@ -64,6 +65,7 @@ split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)
       
       w_2 <- w
       
+      #Split words with punctuation.
       for(p in punct){
         if(length(grep(p, w_2)) > 0){
           w_2 <- gsub(p, "", w_2)
