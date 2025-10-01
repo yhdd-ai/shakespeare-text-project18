@@ -147,8 +147,7 @@ clean_text <- function(a){
 # Execute text preprocessing (output cleaned text vector 'a')
 a <- clean_text(a)
 # check first 100 words
-head(a, 100)
-
+head(a, 1000)
 
 ## ------------------------------
 ## Member2: Word Frequency & Sequence Matrix Module (Huaidong Yue)
