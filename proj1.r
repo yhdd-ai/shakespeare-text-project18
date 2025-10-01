@@ -41,15 +41,18 @@ a <- scan("shakespeare.txt",
 ##
 # function:split_punct()
 # purpose:
-#   Separate punctuation marks from words
+#   This function handles the situation where words and punctuation are not separated when reading text
+#   It separates punctuation marks from words, such as the element "word," will becomes two elements: "word" and ",".
 #   1.Remove the punctuation mark from the word
 #   2.Insert the punctuation mark as a new element after the word
 # 
 # input:
-#   a-a vector of character
-#   punct-a vector of punctuation marks(default includes ",", ".", ";", ":", "!", "?", "(", ")", "\"", "'")
+#   a -a vector of character, in which some elements contain both word and punctuation mark
+#   punct -a vector of punctuation marks to be split off(default includes ",", ".", ";", ":", "!", "?", "(", ")", "\"", "'")
 # 
-# output: sp_a
+# output: 
+#   sp_a -a character vector which punctuation has been separated into individual elements
+#         unrecognized punctuation marks will be retained
 ##
 split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)", "\"", "'")){
   
@@ -62,7 +65,7 @@ split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)
     w <- a[i]
     
     if(length(grep(punct_pat, w)) == 0){
-      sp_a[[i]] <- w # No punctuation mark
+      sp_a[[i]] <- w # If no punctuation mark, keep it
     }
     else{
       
@@ -91,12 +94,14 @@ split_punct <- function(a, punct=c(",", "\\.", ";", ":", "!", "\\?", "\\(", "\\)
 ##
 # function:clean_text()
 # purpose:
-#   Clean Shakespeare text vector 'a'
-#   Remove stage directions (in [])
-#   Remove character names/headings/numbers
+#   This function aims to clean the Shakespeare text vector 'a' by removing irrelevant elements and standardizing the text. 
+#   Specifically, it includes:
+#   Removes stage directions (enclosed in square brackets, e.g. [Aaa Bbb])
+#   Removes Words that are fully upper case except "I" and "A" (character names or headings of various sorts)
+#   Remove numeric labels(They are not part of the text in the works of Shakespeare)
 #   Remove “_” and "-"
 #   Use split_punct function to separate the punctuation marks
-#   Convert to lowercase
+#   Convert to lowercase(For simplicity and to unify the forms of all words)
 # input:a-a vector of character
 # 
 # output:a- the cleaned vector a
@@ -110,7 +115,7 @@ clean_text <- function(a){
   a_remove <- rep(TRUE, length(a)) # Mark parts to keep (TRUE = keep, FALSE = remove)
   
   for(i in a_bracket_le){
-    # Find the first ")" after "[" (within 100 steps to avoid over-removal)
+    # Find the first "]" after "[" (within 100 steps to avoid over-removal)
     a_bracket_ri <- a_bracket_ri_all[a_bracket_ri_all > i & a_bracket_ri_all <= i + 100]
     
     if(length(a_bracket_ri) == 0){
