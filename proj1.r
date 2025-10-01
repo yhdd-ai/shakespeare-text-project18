@@ -162,15 +162,15 @@ head(a, 1000)
 #   2.Word Frequency Statistics
 # 
 # input:
-#   pre_words-vector of split, cleaned character (output of clean_text)
+#   pre_words:vector of split, cleaned character (output of clean_text)
 # 
 # output: 
-#   word_counts-counts of each unique word (named numeric vector)
+#   word_counts:counts of each unique word (named numeric vector)
 ##
 vocabulary_constr_and_freq <- function(pre_words){
   pre_words<-tolower(pre_words)
   
-  # Retrieve all unique words in the cleaned text
+  #Retrieve all unique words in the cleaned text
   unique_words<-unique(pre_words)
   
   # Map words to their indices in the unique vocabulary
@@ -199,26 +199,26 @@ b <- c()
 #   Common word marker sequence matrix construction
 # 
 # input:
-#   word_counts: Counts of each unique word.
-#   mlag: Lag order.
-#   a: Character vector. Cleaned text data (output from clean_text function), 
+#   word_counts: counts of each unique word.
+#   mlag: lag order.
+#   a: character vector. Cleaned text data (output from clean_text function), 
 #      where elements are words or punctuation marks in lowercase. 
 # 
 # output: 
 #   A list containing three elements:
-#   - M: Matrix. Sequence matrix with dimensions (n - mlag) × (mlag + 1), where n is the length of token_vec.
+#   - M: matrix. Sequence matrix with dimensions (n - mlag) × (mlag + 1), where n is the length of token_vec.
 #        Each row represents a sliding window of token indices; columns correspond to lagged positions 
 #        (from lag 0 to lag mlag).
-#   - b: Character vector. Top 1000 most frequent words from the cleaned text (common word vocabulary).
+#   - b: character vector. Top 1000 most frequent words from the cleaned text (common word vocabulary).
 #   - token_vec: Integer vector. Mapping of each element in 'a' to its index in 'b' (NA if not in 'b').
 ##
 matrix_construction <- function(word_counts, mlag, a){
-  # Filter top 1000 most common words
+  #Filter top 1000 most common words
   k<-1000
   sorted_words<-names(sort(word_counts, decreasing = TRUE))
   b<-sorted_words[1:min(k, length(sorted_words))]
   
-  # Generate token vector: map cleaned words to indices of common words (NA if not in common_words)
+  #Generate token vector: map cleaned words to indices of common words (NA if not in common_words)
   token_vec<-match(a, b)
 
   n<-length(token_vec)
@@ -226,8 +226,8 @@ matrix_construction <- function(word_counts, mlag, a){
     stop("The text length is insufficient to construct matrix M.")
   }
   
-  # Initialize sequence matrix M
-  # Rows: n - mlag (number of windows); Columns: mlag + 1 (lag 0 to lag mlag)
+  #Initialize sequence matrix M
+  #Rows: n - mlag (number of windows); Columns: mlag + 1 (lag 0 to lag mlag)
   M<-matrix(NA,nrow = n - mlag,ncol = mlag + 1)
   
   for(col in 1:(mlag+1)) {
@@ -237,7 +237,7 @@ matrix_construction <- function(word_counts, mlag, a){
   return(list(M = M, b=b, token_vec = token_vec))
 }
 
-# Execute sequence matrix construction (input: word_counts + mlag; output: M,token_vec)
+#Execute sequence matrix construction (input: word_counts + mlag; output: M,token_vec)
 result<-matrix_construction(word_counts, mlag, a)
 M<-result$M  
 b<-result$b
@@ -265,7 +265,7 @@ token_vec<-result$token_vec
 #   Integer. The token of the next word (corresponds to the index of the common word list 'b').
 ##
 next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
-  # If the length of 'key' exceeds 'mlag', keep only the last 'mlag' tokens
+  #If the length of 'key' exceeds 'mlag', keep only the last 'mlag' tokens
   if (length(key) > mlag){
     key <- tail(key, mlag)
   } 
@@ -274,7 +274,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   probs <- c()
   
   key_len <- length(key)
-  # Start matching from the longest subkey and gradually reduce the order
+  #Start matching from the longest subkey and gradually reduce the order
   for (i in seq_len(key_len)) {
     subkey <- tail(key, i)
     mc <- mlag - i + 1
@@ -292,25 +292,25 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
     }
   }
   
-  # Fallback: If no candidates are found, randomly sample a valid token from the full text
+  #Fallback: If no candidates are found, randomly sample a valid token from the full text
   if (length(candidates) == 0) {
     return(sample(M1[!is.na(M1)], 1))
   }
   
-  # Merge probabilities for duplicate tokens
+  #Merge probabilities for duplicate tokens
   prob_table <- tapply(probs, candidates, sum)
   
-  # Remove NA entries
+  #Remove NA entries
   prob_table <- prob_table[!is.na(prob_table)]
   if (length(prob_table) == 0) {
     valid_tokens <- M1[!is.na(M1)]
     return(sample(valid_tokens, 1))
   }
   
-  # Normalize probabilities to ensure they sum to 1
+  #Normalize probabilities to ensure they sum to 1
   prob_table <- prob_table / sum(prob_table)
   
-  # Weighted sampling to select the next token
+  #Weighted sampling to select the next token
   next_token <- sample(names(prob_table), 1, prob = prob_table)
   return(as.numeric(next_token))
   
@@ -324,17 +324,17 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
 #   Generate a coherent sentence using the Markov chain model
 # 
 # Inputs:
-#   M: Markov matrix constructed from text data
-#   M1: Full token sequence of the original text 
-#   b: Common word vocabulary
-#   start_word: Optional starting word (string); if NULL, a random valid token is selected
-#   mlag: Lag order for sequence prediction
+#   M: markov matrix constructed from text data
+#   M1: full token sequence of the original text 
+#   b: common word vocabulary
+#   start_word: optional starting word (string); if NULL, a random valid token is selected
+#   mlag: lag order for sequence prediction
 # 
 # Output: 
 #   Generated sentence as a formatted string
 ##
 simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) - 1) {
-  # Select starting token
+  #Select starting token
   if (is.null(start_word)) {
     valid_tokens <- M1[!is.na(M1)]
     if (length(valid_tokens) == 0) {
@@ -350,15 +350,15 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
 
   sentence_tokens <- c(start_token)
   
-  # Continuously predict next tokens until termination condition
+  #Continuously predict next tokens until termination condition
   repeat {
-    # Extract current context (up to mlag most recent tokens)
+    #Extract current context (up to mlag most recent tokens)
     key <- tail(sentence_tokens, mlag)
     
     next_token <- next.word(key, M, M1)
     sentence_tokens <- c(sentence_tokens, next_token)
     
-    # Terminate if period is generated
+    #Terminate if period is generated
     if (b[next_token] == ".")  {
       break
     }
