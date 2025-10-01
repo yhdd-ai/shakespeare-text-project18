@@ -18,8 +18,7 @@
 #     1. vocabulary_constr_and_freq(): Builds vocabulary and counts word frequencies;
 #     2. matrix_construction(): Filters top 1000 frequent words, generates token vector, and builds Markov matrix M;
 #.    3. random_sentence(): Generate a random sentence by randomly selecting words from the common vocabulary and compare to Markov chain result.
-#   - Tuned hyperparameter 'mlag' and validated matrix dimensions.
-#.  - Review code and support function test
+#   - Tuned hyperparameter 'mlag' and validated matrix dimensions and review code and support function test.
 # 
 # Member3: Yifei Peng (UNN: s2792136) - 33%
 #   - Implemented core prediction and sentence generation:
@@ -160,14 +159,14 @@ clean_text <- function(a){
 # author:Huaidong Yue
 # date:25/09/2025
 # purpose:
-#   1.Vocabulary Construction
-#   2.Word Frequency Statistics
+#   1. Construct a vocabulary of unique words from preprocessed text;
+#   2. Calculate the frequency of each unique word and return a named frequency vector.
 # 
 # input:
-#   pre_words: vector of split, cleaned character
+#   pre_words: character vector. Output of the clean_text() function, containing split and cleaned words/punctuation marks in lowercase.
 # 
 # output: 
-#   word_counts: counts of each unique word
+#   word_counts: named numeric vector. Each element represents the frequency of a unique word, with names corresponding to the words from the vocabulary.
 ##
 vocabulary_constr_and_freq <- function(pre_words){
   pre_words<-tolower(pre_words)
@@ -190,11 +189,13 @@ vocabulary_constr_and_freq <- function(pre_words){
 # author:Huaidong Yue
 # date:25/09/2025
 # purpose:
-#   Common word marker sequence matrix construction
+#   1. Construct a vocabulary of top 1000 frequent words from word frequency data;
+#   2. Map cleaned text elements to their indices in the vocabulary (generating token vector);
+#.  3. Build a sequence matrix using sliding windows of token indices for Markov chain modeling.
 # 
 # input:
-#   word_counts: counts of each unique word.
-#   mlag: lag order.
+#   word_counts: named numeric vector. Counts of each unique word.
+#   mlag:integer. Lag order.
 #   a: character vector. Cleaned text data, where elements are words or punctuation marks in lowercase. 
 # 
 # output: 
@@ -202,7 +203,7 @@ vocabulary_constr_and_freq <- function(pre_words){
 #   - M: matrix. Sequence matrix with dimensions (n - mlag) × (mlag + 1), where n is the length of token_vec.
 #        Each row represents a sliding window of token indices; columns correspond to lagged positions.
 #   - b: character vector. Top 1000 most frequent words from the cleaned text.
-#   - token_vec: Integer vector. Mapping of each element in 'a' to its index in 'b' (NA if not in 'b').
+#   - token_vec: integer vector. Mapping of each element in 'a' to its index in 'b' (NA if not in 'b').
 ##
 matrix_construction <- function(word_counts, mlag, a){
   #Filter top 1000 most common words
