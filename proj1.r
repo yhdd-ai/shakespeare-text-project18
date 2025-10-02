@@ -256,7 +256,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   
   candidates <- c() 
   probs <- c()
-  
+
   key_len <- length(key)
   #Start matching from the longest subkey and gradually reduce the order
   for (i in seq_len(key_len)) {
@@ -265,7 +265,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
     
     ii <- colSums(!(t(M[, mc:mlag, drop=FALSE]) == subkey))
     match_rows <- which(ii == 0 & is.finite(ii))
-    
+
     if (length(match_rows) > 0) {
       u <- M[match_rows, mlag+1]
       u <- u[!is.na(u)]  
@@ -354,8 +354,8 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
   words <- b[sentence_tokens]
   
   sentence <- paste(words, collapse=" ")
-  sentence <- gsub(" ([,.;:!?])", "\\1", sentence)
-  sentence <- trimws(sentence)
+  sentence <- gsub(" ([,.;:!?])", "\\1", sentence)  
+  sentence <- trimws(sentence)   
   return(sentence)
 }
 
