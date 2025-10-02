@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#step5:预测下一个单词
-next.word <- function(key, M, M1 , w=rep(1, ncol(M)-1)) {
-  # key: 当前词序列 (tokens, 可能比 mlag 短)
-  # M: (n-mlag) × (mlag+1) 矩阵
-  # M1: 整个文本的 token 向量
-  # w: mixture 权重
-  # output: 下一个词的 token
-  
-  # 若 key 长于 mlag，取最后的 mlag 个
-  if (length(key) > mlag) key <- tail(key, mlag)
-  
-  candidates <- c() #存所有的候选token
-  probs <- c()  #与 candidates 一一对应的概率块（还未合并重复）
-  
-=======
 # Member1：Chunxi Su（UNN：s2814164）；Member2：Huaidong Yue（UNN：s2815318）；Member3：Yifei Peng（UNN：s2792136）
 
 # Project Intruduction:
@@ -272,8 +256,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   
   candidates <- c() 
   probs <- c()
-  
->>>>>>> origin
+
   key_len <- length(key)
   #Start matching from the longest subkey and gradually reduce the order
   for (i in seq_len(key_len)) {
@@ -281,8 +264,8 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
     mc <- mlag - i + 1
     
     ii <- colSums(!(t(M[, mc:mlag, drop=FALSE]) == subkey))
-    match_rows <- which(ii == 0 & is.finite(ii))
-    
+    match_rows <- which(ii == 0 & is.finite(ii)) #The matching line is ii == 0
+
     if (length(match_rows) > 0) {
       u <- M[match_rows, mlag+1]
       u <- u[!is.na(u)]  
@@ -301,12 +284,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   #Merge probabilities for duplicate tokens
   prob_table <- tapply(probs, candidates, sum)
   
-<<<<<<< HEAD
-
-  # 删除NA值
-=======
   #Remove NA entries
->>>>>>> origin
   prob_table <- prob_table[!is.na(prob_table)]
   if (length(prob_table) == 0) {
     valid_tokens <- M1[!is.na(M1)]
@@ -319,19 +297,9 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
   #Weighted sampling to select the next token
   next_token <- sample(names(prob_table), 1, prob = prob_table)
   return(as.numeric(next_token))
+  
 }
 
-<<<<<<< HEAD
-# Step 6: Sentence Generation
-simulate_sentence <- function(M, M1, b, start_word=NULL, mlag=ncol(M) - 1) {
-  # M: Markov 矩阵
-  # M1: 整个文本的 token 序列
-  # b: 常用词表（token -> word 的映射）
-  # start_word: 可选的起始词（string）；若 NULL 则随机挑选一个
-  # 返回: 生成的一句话（string）
-  
-  # 选择起始token
-=======
 ##
 # Function: simulate_sentence()
 # Author: Yifei Peng
@@ -351,7 +319,6 @@ simulate_sentence <- function(M, M1, b, start_word=NULL, mlag=ncol(M) - 1) {
 ##
 simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) - 1) {
   #Select starting token
->>>>>>> origin
   if (is.null(start_word)) {
     valid_tokens <- M1[!is.na(M1)]
     if (length(valid_tokens) == 0) {
@@ -384,19 +351,32 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
     }
   }
   
+  sentence_tokens <- c(start_token)
+  
+  # Continuously predict the next token until '.' is encountered.
+  repeat {
+    # Extract the current key (up to mlag tokens)
+    key <- tail(sentence_tokens, mlag)
+    
+    next_token <- next.word(key, M, M1)
+    sentence_tokens <- c(sentence_tokens, next_token)
+    
+    #Terminate if period is generated
+    if (b[next_token] == ".") {
+      break
+    } 
+    
+    if (length(sentence_tokens) > 50){
+      break
+    }   
+  }
+  
   words <- b[sentence_tokens]
   
-<<<<<<< HEAD
-  # 拼接成句子
-=======
->>>>>>> origin
   sentence <- paste(words, collapse=" ")
-  sentence <- gsub(" ([,.;:!?])", "\\1", sentence)
-  sentence <- trimws(sentence)
+  sentence <- gsub(" ([,.;:!?])", "\\1", sentence)  
+  sentence <- trimws(sentence)   
   return(sentence)
-<<<<<<< HEAD
-}
-=======
 }
 
 ##
@@ -461,4 +441,3 @@ final_output <- paste(
   sep = ""
 )
 cat(final_output)
->>>>>>> origin
