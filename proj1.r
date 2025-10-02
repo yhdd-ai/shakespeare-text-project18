@@ -264,7 +264,7 @@ next.word <- function(key, M, M1 = token_vec, w=rep(1, ncol(M)-1)) {
     mc <- mlag - i + 1
     
     ii <- colSums(!(t(M[, mc:mlag, drop=FALSE]) == subkey))
-    match_rows <- which(ii == 0 & is.finite(ii)) #The matching line is ii == 0
+    match_rows <- which(ii == 0 & is.finite(ii))
 
     if (length(match_rows) > 0) {
       u <- M[match_rows, mlag+1]
@@ -349,26 +349,6 @@ simulate_sentence <- function(M, M1=token_vec, b, start_word=NULL, mlag=ncol(M) 
     if (length(sentence_tokens) > 50) {
       break
     }
-  }
-  
-  sentence_tokens <- c(start_token)
-  
-  # Continuously predict the next token until '.' is encountered.
-  repeat {
-    # Extract the current key (up to mlag tokens)
-    key <- tail(sentence_tokens, mlag)
-    
-    next_token <- next.word(key, M, M1)
-    sentence_tokens <- c(sentence_tokens, next_token)
-    
-    #Terminate if period is generated
-    if (b[next_token] == ".") {
-      break
-    } 
-    
-    if (length(sentence_tokens) > 50){
-      break
-    }   
   }
   
   words <- b[sentence_tokens]
